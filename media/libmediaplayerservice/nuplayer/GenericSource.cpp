@@ -1490,13 +1490,21 @@ void NuPlayer::GenericSource::readBuffer(
     switch (trackType) {
         case MEDIA_TRACK_TYPE_VIDEO:
             track = &mVideoTrack;
+#ifndef QCOM_HARDWARE
+            if (mIsWidevine) {
+#else /* QCOM_HARDWARE */
             if (mIsWidevine || (mHttpSource != NULL)) {
+#endif /* QCOM_HARDWARE */
                 maxBuffers = 2;
             }
             break;
         case MEDIA_TRACK_TYPE_AUDIO:
             track = &mAudioTrack;
+#ifndef QCOM_HARDWARE
+            if (mIsWidevine) {
+#else /* QCOM_HARDWARE */
             if (mIsWidevine || (mHttpSource != NULL)) {
+#endif /* QCOM_HARDWARE */
                 maxBuffers = 8;
             } else {
                 maxBuffers = 64;

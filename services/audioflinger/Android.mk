@@ -85,6 +85,7 @@ LOCAL_STATIC_LIBRARIES := \
     libcpustats \
     libmedia_helper
 
+#ifdef QCOM_HARDWARE
 #QTI Resampler
 ifeq ($(call is-vendor-board-platform,QCOM),true)
 ifeq ($(strip $(AUDIO_FEATURE_ENABLED_EXTN_RESAMPLER)),true)
@@ -93,6 +94,7 @@ endif
 endif
 #QTI Resampler
 
+#endif /* QCOM_HARDWARE */
 LOCAL_MODULE:= libaudioflinger
 LOCAL_32_BIT_ONLY := true
 
@@ -175,6 +177,7 @@ LOCAL_SHARED_LIBRARIES := \
     libcutils \
     libdl \
     liblog
+#ifdef QCOM_HARDWARE
 
 #QTI Resampler
 ifeq ($(call is-vendor-board-platform,QCOM),true)
@@ -193,6 +196,7 @@ endif
 endif
 endif
 #QTI Resampler
+#endif /* QCOM_HARDWARE */
 
 LOCAL_MODULE := libaudioresampler
 

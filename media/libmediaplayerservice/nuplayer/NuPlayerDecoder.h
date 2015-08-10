@@ -62,7 +62,9 @@ private:
     sp<AMessage> mInputFormat;
     sp<MediaCodec> mCodec;
     sp<ALooper> mCodecLooper;
+#ifdef QCOM_HARDWARE
     sp<PlayerExtendedStats> mPlayerExtendedStats;
+#endif /* QCOM_HARDWARE */
 
     List<sp<AMessage> > mPendingInputMessages;
 

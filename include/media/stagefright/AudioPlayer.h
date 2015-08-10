@@ -113,7 +113,9 @@ private:
 
     int64_t mPositionTimeMediaUs;
     int64_t mPositionTimeRealUs;
+#ifdef QCOM_HARDWARE
     int64_t mDurationUs;
+#endif /* QCOM_HARDWARE */
 
     bool mSeeking;
     bool mReachedEOS;
@@ -121,7 +123,9 @@ private:
     int64_t mSeekTimeUs;
 
     bool mStarted;
+#ifdef QCOM_HARDWARE
     bool mSourcePaused;
+#endif /* QCOM_HARDWARE */
 
     bool mIsFirstBuffer;
     status_t mFirstBufferResult;
@@ -139,7 +143,9 @@ private:
     void setDolbyProcessedAudioState(bool processed);
 #endif // DOLBY_END
     const uint32_t mCreateFlags;
+#ifdef QCOM_HARDWARE
     bool mPauseRequired;
+#endif /* QCOM_HARDWARE */
 
     bool mUseSmallBufs;
     static void AudioCallback(int event, void *user, void *info);

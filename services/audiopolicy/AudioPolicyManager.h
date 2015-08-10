@@ -44,7 +44,11 @@ namespace android {
 // Time in milliseconds during witch some streams are muted while the audio path
 // is switched
 //FIXME:: Audio team
+#ifndef QCOM_HARDWARE
 #define MUTE_TIME_MS 2000 //500 ms
+#else /* QCOM_HARDWARE */
+#define MUTE_TIME_MS 500
+#endif /* QCOM_HARDWARE */
 
 #define NUM_TEST_OUTPUTS 5
 
@@ -54,7 +58,11 @@ namespace android {
 // Can be overridden by the audio.offload.min.duration.secs property
 #define OFFLOAD_DEFAULT_MIN_DURATION_SECS 60
 
+#ifndef QCOM_HARDWARE
+#define MAX_MIXER_SAMPLING_RATE 48000
+#else /* QCOM_HARDWARE */
 #define MAX_MIXER_SAMPLING_RATE 192000
+#endif /* QCOM_HARDWARE */
 #define MAX_MIXER_CHANNEL_COUNT 8
 
 // ----------------------------------------------------------------------------
@@ -905,12 +913,14 @@ protected:
         uint32_t mFastSuspended;
         uint32_t mMultiChannelSuspended;
 
+#ifdef QCOM_HARDWARE
         // returns true if given output is direct output
         bool isDirectOutput(audio_io_handle_t output);
         //parameter indicates of HDMI speakers disabled
         bool mHdmiAudioDisabled;
         //parameter indicates if HDMI plug in/out detected
         bool mHdmiAudioEvent;
+#endif /* QCOM_HARDWARE */
 private:
         static float volIndexToAmpl(audio_devices_t device, const StreamDescriptor& streamDesc,
                 int indexInUi);
@@ -944,6 +954,8 @@ private:
                 const audio_offload_info_t *offloadInfo);
         // internal function to derive a stream type value from audio attributes
         audio_stream_type_t streamTypefromAttributesInt(const audio_attributes_t *attr);
+#ifdef QCOM_HARDWARE
+
         // Used for voip + voice concurrency usecase
         int mPrevPhoneState;
         int mvoice_call_state;
@@ -951,6 +963,7 @@ private:
         // Used for record + playback concurrency
         bool mIsInputRequestOnProgress;
 #endif
+#endif /* QCOM_HARDWARE */
 
 #if defined(DOLBY_UDC) || defined(DOLBY_DAP_MOVE_EFFECT)
 protected:
@@ -977,6 +990,7 @@ protected:
                                                           const char *device_address);
         sp<DeviceDescriptor>  getDeviceDescriptor(const audio_devices_t device,
                                                   const char *device_address);
+
 
 };
 

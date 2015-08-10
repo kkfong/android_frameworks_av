@@ -33,7 +33,9 @@
 #include "TestPlayerStub.h"
 #include "StagefrightPlayer.h"
 #include "nuplayer/NuPlayerDriver.h"
+#ifdef QCOM_HARDWARE
 #include <dlfcn.h>
+#endif /* QCOM_HARDWARE */
 
 namespace android {
 
@@ -404,6 +406,7 @@ void MediaPlayerFactory::registerBuiltinFactories() {
     registerFactory_l(new SonivoxPlayerFactory(), SONIVOX_PLAYER);
     registerFactory_l(new TestPlayerFactory(), TEST_PLAYER);
 
+#ifdef QCOM_HARDWARE
     const char* FACTORY_LIB           = "libdashplayer.so";
     const char* FACTORY_CREATE_FN     = "CreateDASHFactory";
 
@@ -430,6 +433,7 @@ void MediaPlayerFactory::registerBuiltinFactories() {
         }
       }
     }
+#endif /* QCOM_HARDWARE */
     sInitComplete = true;
 }
 

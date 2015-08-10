@@ -105,7 +105,11 @@ public:
                                                CAMERA_DEVICE_API_VERSION_1_0,
                                                (hw_device_t **)&mDevice);
         } else {
+#ifdef QCOM_HARDWARE
             rc = CameraService::filterOpenErrorCode(module->methods->open(
+#else /* QCOM_HARDWARE */
+            rc = filterOpenErrorCode(module->methods->open(
+#endif /* QCOM_HARDWARE */
                 module, mName.string(), (hw_device_t **)&mDevice));
         }
         if (rc != OK) {

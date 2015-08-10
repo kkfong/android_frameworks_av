@@ -24,16 +24,20 @@
 
 #include <audio_utils/primitives.h>
 #include <binder/IPCThreadState.h>
+#ifdef QCOM_HARDWARE
 #include <media/AudioParameter.h>
 #include <media/AudioSystem.h>
+#endif /* QCOM_HARDWARE */
 #include <media/AudioTrack.h>
 #include <utils/Log.h>
 #include <private/media/AudioTrackShared.h>
 #include <media/IAudioFlinger.h>
 #include <media/AudioPolicyHelper.h>
 #include <media/AudioResamplerPublic.h>
+#ifdef QCOM_HARDWARE
 #include <cutils/properties.h>
 #include <system/audio.h>
+#endif /* QCOM_HARDWARE */
 
 #define WAIT_PERIOD_MS                  10
 #define WAIT_STREAM_END_TIMEOUT_SEC     120
@@ -419,6 +423,7 @@ status_t AudioTrack::set(
                                            audio_attributes_to_stream_type(&mAttributes):
                                            mStreamType;
 
+#ifdef QCOM_HARDWARE
     if ((attr_streamType == AUDIO_STREAM_VOICE_CALL) &&
         (mChannelCount == 1) &&
         (sampleRate == 8000 || sampleRate == 16000)) {
@@ -467,6 +472,7 @@ status_t AudioTrack::set(
         }
     }
 
+#endif /* QCOM_HARDWARE */
 
     // force direct flag if HW A/V sync requested
     if ((flags & AUDIO_OUTPUT_FLAG_HW_AV_SYNC) != 0) {
@@ -626,13 +632,21 @@ status_t AudioTrack::start()
     }
 
     status_t status = NO_ERROR;
+#ifndef QCOM_HARDWARE
+    if (!(flags & CBLK_INVALID)) {
+#else /* QCOM_HARDWARE */
     if (!(flags & (CBLK_INVALID | CBLK_STREAM_FATAL_ERROR))) {
+#endif /* QCOM_HARDWARE */
         status = mAudioTrack->start();
         if (status == DEAD_OBJECT) {
             flags |= CBLK_INVALID;
         }
     }
+#ifndef QCOM_HARDWARE
+    if (flags & CBLK_INVALID) {
+#else /* QCOM_HARDWARE */
     if (flags & (CBLK_INVALID | CBLK_STREAM_FATAL_ERROR)) {
+#endif /* QCOM_HARDWARE */
         status = restoreTrack_l("start");
     }
 
@@ -981,7 +995,9 @@ status_t AudioTrack::getPosition(uint32_t *position)
     AutoMutex lock(mLock);
     if (isOffloadedOrDirect_l()) {
         uint32_t dspFrames = 0;
+#ifdef QCOM_HARDWARE
         status_t status;
+#endif /* QCOM_HARDWARE */
 
         if (isOffloaded_l() && ((mState == STATE_PAUSED) || (mState == STATE_PAUSED_STOPPING))) {
             ALOGV("getPosition called in paused state, return cached position %u", mPausedPosition);
@@ -998,11 +1014,15 @@ status_t AudioTrack::getPosition(uint32_t *position)
 
         if (mOutput != AUDIO_IO_HANDLE_NONE) {
             uint32_t halFrames;
+#ifndef QCOM_HARDWARE
+            AudioSystem::getRenderPosition(mOutput, &halFrames, &dspFrames);
+#else /* QCOM_HARDWARE */
             status = AudioSystem::getRenderPosition(mOutput, &halFrames, &dspFrames);
             if (status != NO_ERROR) {
                 ALOGW("failed to getRenderPosition for offload session");
                 return INVALID_OPERATION;
             }
+#endif /* QCOM_HARDWARE */
         }
         // FIXME: dspFrames may not be zero in (mState == STATE_STOPPED || mState == STATE_FLUSHED)
         // due to hardware latency. We leave this behavior for now.
@@ -1202,8 +1222,12 @@ status_t AudioTrack::createTrack_l()
             // Same comment as below about ignoring frameCount parameter for set()
             frameCount = mSharedBuffer->size();
         } else if (frameCount == 0) {
+#ifndef QCOM_HARDWARE
+            frameCount = afFrameCount;
+#else /* QCOM_HARDWARE */
             frameCount = afFrameCount * 2;
             ALOGV("Offload: new frameCount = %d", frameCount);
+#endif /* QCOM_HARDWARE */
         }
         if (mNotificationFramesAct != frameCount) {
             mNotificationFramesAct = frameCount;
@@ -1419,7 +1443,12 @@ status_t AudioTrack::createTrack_l()
     }
 
     mAudioTrack->attachAuxEffect(mAuxEffectId);
+#ifndef QCOM_HARDWARE
+    // FIXME don't believe this lie
+    mLatency = afLatency + (1000*frameCount) / mSampleRate;
+#endif /* ! QCOM_HARDWARE */
 
+#ifdef QCOM_HARDWARE
     if (mFlags & AUDIO_OUTPUT_FLAG_COMPRESS_OFFLOAD) {
         // Use latency given by HAL in offload mode
         mLatency = afLatency;
@@ -1427,6 +1456,7 @@ status_t AudioTrack::createTrack_l()
         // FIXME don't believe this lie
         mLatency = afLatency + (1000*frameCount) / mSampleRate;
     }
+#endif /* QCOM_HARDWARE */
     mFrameCount = frameCount;
     // If IAudioTrack is re-created, don't let the requested frameCount
     // decrease.  This can confuse clients that cache frameCount().
@@ -1740,10 +1770,14 @@ nsecs_t AudioTrack::processAudioBuffer()
     // Currently the AudioTrack thread is not created if there are no callbacks.
     // Would it ever make sense to run the thread, even without callbacks?
     // If so, then replace this by checks at each use for mCbf != NULL.
+#ifndef QCOM_HARDWARE
+    LOG_ALWAYS_FATAL_IF(mCblk == NULL);
+#else /* QCOM_HARDWARE */
     if (mCblk == NULL) {
         ALOGE("mCblk is NULL");
         return NS_NEVER;
     }
+#endif /* QCOM_HARDWARE */
 
     mLock.lock();
     if (mAwaitBoost) {
@@ -1771,6 +1805,7 @@ nsecs_t AudioTrack::processAudioBuffer()
     int32_t flags = android_atomic_and(
         ~(CBLK_UNDERRUN | CBLK_LOOP_CYCLE | CBLK_LOOP_FINAL | CBLK_BUFFER_END), &mCblk->mFlags);
 
+#ifdef QCOM_HARDWARE
     if (flags & CBLK_STREAM_FATAL_ERROR) {
         ALOGE("clbk sees STREAM_FATAL_ERROR.. close session");
         mLock.unlock();
@@ -1778,6 +1813,7 @@ nsecs_t AudioTrack::processAudioBuffer()
         return NS_INACTIVE;
     }
 
+#endif /* QCOM_HARDWARE */
     // Check for track invalidation
     if (flags & CBLK_INVALID) {
         // for offloaded tracks restoreTrack_l() will just update the sequence and clear
@@ -1885,6 +1921,7 @@ nsecs_t AudioTrack::processAudioBuffer()
         }
     }
 
+#ifdef QCOM_HARDWARE
 
     if (waitStreamEnd) {
         AutoMutex lock(mLock);
@@ -1925,6 +1962,7 @@ nsecs_t AudioTrack::processAudioBuffer()
         }
     }
 
+#endif /* QCOM_HARDWARE */
     // if inactive, then don't run me again until re-started
     if (!active) {
         return NS_INACTIVE;

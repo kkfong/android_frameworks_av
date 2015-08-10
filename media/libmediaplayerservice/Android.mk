@@ -59,6 +59,7 @@ LOCAL_MODULE:= libmediaplayerservice
 
 LOCAL_32_BIT_ONLY := true
 
+#ifdef QCOM_HARDWARE
 ifeq ($(TARGET_ENABLE_QC_AV_ENHANCEMENTS),true)
     LOCAL_CFLAGS += -DENABLE_AV_ENHANCEMENTS
     LOCAL_C_INCLUDES += $(TOP)/frameworks/av-caf/include/media
@@ -68,6 +69,7 @@ else
     LOCAL_C_INCLUDES += $(TOP)/hardware/qcom/media/mm-core/inc
 endif
 endif
+#endif /* QCOM_HARDWARE */
 
 #QTI FLAC Decoder
 ifeq ($(call is-vendor-board-platform,QCOM),true)

@@ -32,8 +32,10 @@
 #include <media/stagefright/MediaCodec.h>
 #include <media/stagefright/MediaDefs.h>
 #include <media/stagefright/MediaErrors.h>
+#ifdef QCOM_HARDWARE
 #include <media/stagefright/ExtendedCodec.h>
 
+#endif /* QCOM_HARDWARE */
 
 #include "avc_utils.h"
 #include "ATSParser.h"
@@ -141,6 +143,9 @@ void NuPlayer::Decoder::onConfigure(const sp<AMessage> &format) {
     mComponentName.append(" decoder");
     ALOGV("[%s] onConfigure (surface=%p)", mComponentName.c_str(), surface.get());
 
+#ifndef QCOM_HARDWARE
+    mCodec = MediaCodec::CreateByType(mCodecLooper, mime.c_str(), false /* encoder */);
+#else /* QCOM_HARDWARE */
     ExtendedCodec::overrideMimeType(format, &mime);
 
     /* time allocateNode here */
@@ -155,6 +160,7 @@ void NuPlayer::Decoder::onConfigure(const sp<AMessage> &format) {
         mCodec = MediaCodec::CreateByType(mCodecLooper, mime.c_str(), false /* encoder */);
     }
 
+#endif /* QCOM_HARDWARE */
     int32_t secure = 0;
     if (format->findInt32("secure", &secure) && secure != 0) {
         if (mCodec != NULL) {
@@ -186,9 +192,11 @@ void NuPlayer::Decoder::onConfigure(const sp<AMessage> &format) {
         // any error signaling will occur.
         ALOGW_IF(err != OK, "failed to disconnect from surface: %d", err);
     }
+#ifdef QCOM_HARDWARE
     if (mPlayerExtendedStats != NULL) {
         format->setObject(MEDIA_EXTENDED_STATS, mPlayerExtendedStats);
     }
+#endif /* QCOM_HARDWARE */
     err = mCodec->configure(
             format, surface, NULL /* crypto */, 0 /* flags */);
     if (err != OK) {
@@ -794,8 +802,10 @@ bool NuPlayer::Decoder::onInputBufferFetched(const sp<AMessage> &msg) {
                 mMediaBuffers.editItemAt(bufferIx) = mediaBuffer;
             }
         }
+#ifdef QCOM_HARDWARE
 
         PLAYER_STATS(logBitRate, buffer->size(), timeUs);
+#endif /* QCOM_HARDWARE */
     }
     return true;
 }
