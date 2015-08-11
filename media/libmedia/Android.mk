@@ -89,11 +89,7 @@ endif
 LOCAL_SHARED_LIBRARIES := \
 	libui liblog libcutils libutils libbinder libsonivox libicuuc libicui18n libexpat \
         libcamera_client libstagefright_foundation \
-#ifndef QCOM_HARDWARE
-        libgui libdl libaudioutils libnbaio
-#else /* QCOM_HARDWARE */
         libgui libdl libaudioutils libnbaio libaudioparameter
-#endif /* QCOM_HARDWARE */
 
 LOCAL_STATIC_LIBRARIES += libinstantssq
 

@@ -63,9 +63,7 @@ LOCAL_SRC_FILES:=                         \
         NuMediaExtractor.cpp              \
         OMXClient.cpp                     \
         OMXCodec.cpp                      \
-#ifdef QCOM_HARDWARE
         ExtendedCodec.cpp                 \
-#endif /* QCOM_HARDWARE */
         OggExtractor.cpp                  \
         SampleIterator.cpp                \
         SampleTable.cpp                   \
@@ -79,17 +77,13 @@ LOCAL_SRC_FILES:=                         \
         Utils.cpp                         \
         VBRISeeker.cpp                    \
         WAVExtractor.cpp                  \
-#ifdef QCOM_HARDWARE
         WAVEWriter.cpp                    \
-#endif /* QCOM_HARDWARE */
         WVMExtractor.cpp                  \
         XINGSeeker.cpp                    \
         avc_utils.cpp                     \
-#ifdef QCOM_HARDWARE
         ExtendedExtractor.cpp             \
         ExtendedUtils.cpp                 \
         ExtendedStats.cpp                 \
-#endif /* QCOM_HARDWARE */
 
 LOCAL_C_INCLUDES:= \
         $(TOP)/frameworks/av-caf/include/media/ \

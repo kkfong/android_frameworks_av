@@ -140,14 +140,12 @@ const StringToEnum sDeviceNameToEnumTable[] = {
     STRING_TO_ENUM(AUDIO_DEVICE_OUT_FM),
     STRING_TO_ENUM(AUDIO_DEVICE_OUT_AUX_LINE),
     STRING_TO_ENUM(AUDIO_DEVICE_IN_AMBIENT),
-#ifdef QCOM_HARDWARE
 #ifdef AUDIO_EXTN_AFE_PROXY_ENABLED
     STRING_TO_ENUM(AUDIO_DEVICE_OUT_PROXY),
 #endif
 #ifdef AUDIO_EXTN_FM_ENABLED
     STRING_TO_ENUM(AUDIO_DEVICE_OUT_FM_TX),
 #endif
-#endif /* QCOM_HARDWARE */
     STRING_TO_ENUM(AUDIO_DEVICE_IN_BUILTIN_MIC),
     STRING_TO_ENUM(AUDIO_DEVICE_IN_BLUETOOTH_SCO_HEADSET),
     STRING_TO_ENUM(AUDIO_DEVICE_IN_ALL_SCO),
@@ -168,12 +166,10 @@ const StringToEnum sDeviceNameToEnumTable[] = {
     STRING_TO_ENUM(AUDIO_DEVICE_IN_SPDIF),
     STRING_TO_ENUM(AUDIO_DEVICE_IN_BLUETOOTH_A2DP),
     STRING_TO_ENUM(AUDIO_DEVICE_IN_LOOPBACK),
-#ifdef QCOM_HARDWARE
 #ifdef AUDIO_EXTN_FM_ENABLED
     STRING_TO_ENUM(AUDIO_DEVICE_IN_FM_RX),
     STRING_TO_ENUM(AUDIO_DEVICE_IN_FM_RX_A2DP),
 #endif
-#endif /* QCOM_HARDWARE */
 };
 
 const StringToEnum sOutputFlagNameToEnumTable[] = {
@@ -184,14 +180,12 @@ const StringToEnum sOutputFlagNameToEnumTable[] = {
     STRING_TO_ENUM(AUDIO_OUTPUT_FLAG_COMPRESS_OFFLOAD),
     STRING_TO_ENUM(AUDIO_OUTPUT_FLAG_NON_BLOCKING),
     STRING_TO_ENUM(AUDIO_OUTPUT_FLAG_HW_AV_SYNC),
-#ifdef QCOM_HARDWARE
 #ifdef AUDIO_EXTN_INCALL_MUSIC_ENABLED
     STRING_TO_ENUM(AUDIO_OUTPUT_FLAG_INCALL_MUSIC),
 #endif
 #ifdef AUDIO_EXTN_COMPRESS_VOIP_ENABLED
     STRING_TO_ENUM(AUDIO_OUTPUT_FLAG_VOIP_RX),
 #endif
-#endif /* QCOM_HARDWARE */
 #ifdef HDMI_PASSTHROUGH_ENABLED
     STRING_TO_ENUM(AUDIO_OUTPUT_FLAG_COMPRESS_PASSTHROUGH),
 #endif
@@ -227,7 +221,6 @@ const StringToEnum sFormatNameToEnumTable[] = {
     STRING_TO_ENUM(AUDIO_FORMAT_OPUS),
     STRING_TO_ENUM(AUDIO_FORMAT_AC3),
     STRING_TO_ENUM(AUDIO_FORMAT_E_AC3),
-#ifdef QCOM_HARDWARE
 #ifdef AUDIO_EXTN_FORMATS_ENABLED
     STRING_TO_ENUM(AUDIO_FORMAT_DTS),
     STRING_TO_ENUM(AUDIO_FORMAT_DTS_LBR),
@@ -248,7 +241,6 @@ const StringToEnum sFormatNameToEnumTable[] = {
     STRING_TO_ENUM(AUDIO_FORMAT_PCM_24_BIT_OFFLOAD),
     STRING_TO_ENUM(AUDIO_FORMAT_E_AC3_JOC),
 #endif
-#endif /* QCOM_HARDWARE */
 };
 
 const StringToEnum sOutChannelsNameToEnumTable[] = {
@@ -257,7 +249,6 @@ const StringToEnum sOutChannelsNameToEnumTable[] = {
     STRING_TO_ENUM(AUDIO_CHANNEL_OUT_QUAD),
     STRING_TO_ENUM(AUDIO_CHANNEL_OUT_5POINT1),
     STRING_TO_ENUM(AUDIO_CHANNEL_OUT_7POINT1),
-#ifdef QCOM_HARDWARE
 #if defined(DOLBY_UDC) || defined(DOLBY_DDP)
     STRING_TO_ENUM(AUDIO_CHANNEL_OUT_2POINT1),
     STRING_TO_ENUM(AUDIO_CHANNEL_OUT_QUAD),
@@ -265,18 +256,15 @@ const StringToEnum sOutChannelsNameToEnumTable[] = {
     STRING_TO_ENUM(AUDIO_CHANNEL_OUT_PENTA),
     STRING_TO_ENUM(AUDIO_CHANNEL_OUT_6POINT1),
 #endif
-#endif /* QCOM_HARDWARE */
 };
 
 const StringToEnum sInChannelsNameToEnumTable[] = {
     STRING_TO_ENUM(AUDIO_CHANNEL_IN_MONO),
     STRING_TO_ENUM(AUDIO_CHANNEL_IN_STEREO),
     STRING_TO_ENUM(AUDIO_CHANNEL_IN_FRONT_BACK),
-#ifdef QCOM_HARDWARE
 #ifdef AUDIO_EXTN_SSR_ENABLED
     STRING_TO_ENUM(AUDIO_CHANNEL_IN_5POINT1),
 #endif
-#endif /* QCOM_HARDWARE */
 };
 
 const StringToEnum sGainModeNameToEnumTable[] = {
@@ -333,9 +321,8 @@ status_t AudioPolicyManager::setDeviceConnectionStateInt(audio_devices_t device,
                                                          const char *device_address)
 {
     String8 address = (device_address == NULL) ? String8("") : String8(device_address);
-#ifdef QCOM_HARDWARE
+
     AudioParameter param;
-#endif /* QCOM_HARDWARE */
 
     // handle legacy remote submix case where the address was not always specified
     if (deviceDistinguishesOnAddress(device) && (address.length() == 0)) {
@@ -365,7 +352,6 @@ status_t AudioPolicyManager::setDeviceConnectionStateInt(audio_devices_t device,
         // handle output device connection
         case AUDIO_POLICY_DEVICE_STATE_AVAILABLE:
             if (index >= 0) {
-#ifdef QCOM_HARDWARE
 #ifdef AUDIO_EXTN_HDMI_SPK_ENABLED
                 if ((popcount(device) == 1) && (device & AUDIO_DEVICE_OUT_AUX_DIGITAL)) {
                    if (!strncmp(device_address, "hdmi_spkr", 9)) {
@@ -375,7 +361,6 @@ status_t AudioPolicyManager::setDeviceConnectionStateInt(audio_devices_t device,
                     }
                 }
 #endif
-#endif /* QCOM_HARDWARE */
                 ALOGW("setDeviceConnectionState() device already connected: %x", device);
                 return INVALID_OPERATION;
             }
@@ -383,7 +368,6 @@ status_t AudioPolicyManager::setDeviceConnectionStateInt(audio_devices_t device,
 
             // register new device as available
             index = mAvailableOutputDevices.add(devDesc);
-#ifdef QCOM_HARDWARE
 
 #ifdef AUDIO_EXTN_HDMI_SPK_ENABLED
             if ((popcount(device) == 1) && (device & AUDIO_DEVICE_OUT_AUX_DIGITAL)) {
@@ -397,7 +381,6 @@ status_t AudioPolicyManager::setDeviceConnectionStateInt(audio_devices_t device,
                 }
             }
 #endif
-#endif /* QCOM_HARDWARE */
             if (index >= 0) {
                 sp<HwModule> module = getModuleForDevice(device);
                 if (module == 0) {
@@ -421,7 +404,6 @@ status_t AudioPolicyManager::setDeviceConnectionStateInt(audio_devices_t device,
                     "checkOutputsForDevice() returned no outputs but status OK");
             ALOGV("setDeviceConnectionState() checkOutputsForDevice() returned %zu outputs",
                   outputs.size());
-#ifdef QCOM_HARDWARE
 
 
             // Set connect to HALs
@@ -429,12 +411,10 @@ status_t AudioPolicyManager::setDeviceConnectionStateInt(audio_devices_t device,
             param.addInt(String8(AUDIO_PARAMETER_DEVICE_CONNECT), device);
             mpClientInterface->setParameters(AUDIO_IO_HANDLE_NONE, param.toString());
 
-#endif /* QCOM_HARDWARE */
             break;
         // handle output device disconnection
         case AUDIO_POLICY_DEVICE_STATE_UNAVAILABLE: {
             if (index < 0) {
-#ifdef QCOM_HARDWARE
 #ifdef AUDIO_EXTN_HDMI_SPK_ENABLED
                 if ((popcount(device) == 1) && (device & AUDIO_DEVICE_OUT_AUX_DIGITAL)) {
                     if (!strncmp(device_address, "hdmi_spkr", 9)) {
@@ -444,7 +424,6 @@ status_t AudioPolicyManager::setDeviceConnectionStateInt(audio_devices_t device,
                     }
                 }
 #endif
-#endif /* QCOM_HARDWARE */
                 ALOGW("setDeviceConnectionState() device not connected: %x", device);
                 return INVALID_OPERATION;
             }
@@ -452,18 +431,13 @@ status_t AudioPolicyManager::setDeviceConnectionStateInt(audio_devices_t device,
             ALOGV("setDeviceConnectionState() disconnecting output device %x", device);
 
             // Set Disconnect to HALs
-#ifndef QCOM_HARDWARE
-            AudioParameter param = AudioParameter(address);
-#else /* QCOM_HARDWARE */
             param = AudioParameter(address);
-#endif /* QCOM_HARDWARE */
             param.addInt(String8(AUDIO_PARAMETER_DEVICE_DISCONNECT), device);
             mpClientInterface->setParameters(AUDIO_IO_HANDLE_NONE, param.toString());
 
             // remove device from available output devices
             mAvailableOutputDevices.remove(devDesc);
 
-#ifdef QCOM_HARDWARE
 #ifdef AUDIO_EXTN_HDMI_SPK_ENABLED
             if ((popcount(device) == 1) && (device & AUDIO_DEVICE_OUT_AUX_DIGITAL)) {
                 if (!strncmp(device_address, "hdmi_spkr", 9)) {
@@ -473,7 +447,6 @@ status_t AudioPolicyManager::setDeviceConnectionStateInt(audio_devices_t device,
                 }
             }
 #endif
-#endif /* QCOM_HARDWARE */
             checkOutputsForDevice(devDesc, state, outputs, address);
             } break;
 
@@ -509,21 +482,15 @@ status_t AudioPolicyManager::setDeviceConnectionStateInt(audio_devices_t device,
         ALOGV("setDeviceConnectionState: device 0x%x all_devices 0x%x", ndev, availableOutputDevices);
         notify_route_node(ndev, availableOutputDevices);
 #endif
-#ifdef QCOM_HARDWARE
         audio_devices_t newDevice = getNewOutputDevice(mPrimaryOutput, false /*fromCache*/);
-#endif /* QCOM_HARDWARE */
 #ifdef DOLBY_UDC
         // Before closing the opened outputs, update endpoint property with device capabilities
         audio_devices_t audioOutputDevice = getDeviceForStrategy(getStrategy(AUDIO_STREAM_MUSIC), true);
         mDolbyAudioPolicy.setEndpointSystemProperty(audioOutputDevice, mHwModules);
 #endif // DOLBY_END
         if (mPhoneState == AUDIO_MODE_IN_CALL) {
-#ifndef QCOM_HARDWARE
-            audio_devices_t newDevice = getNewOutputDevice(mPrimaryOutput, false /*fromCache*/);
-#endif /* ! QCOM_HARDWARE */
             updateCallRouting(newDevice);
         }
-#ifdef QCOM_HARDWARE
 
 #ifdef AUDIO_EXTN_FM_ENABLED
         if(device == AUDIO_DEVICE_OUT_FM) {
@@ -540,7 +507,6 @@ status_t AudioPolicyManager::setDeviceConnectionStateInt(audio_devices_t device,
             mpClientInterface->setParameters(mPrimaryOutput, param.toString());
         }
 #endif
-#endif /* QCOM_HARDWARE */
         for (size_t i = 0; i < mOutputs.size(); i++) {
             audio_io_handle_t output = mOutputs.keyAt(i);
             if ((mPhoneState != AUDIO_MODE_IN_CALL) || (output != mPrimaryOutput)) {
@@ -596,14 +562,12 @@ status_t AudioPolicyManager::setDeviceConnectionStateInt(audio_devices_t device,
             } else {
                 return NO_MEMORY;
             }
-#ifdef QCOM_HARDWARE
 
             // Set connect to HALs
             param = AudioParameter(address);
             param.addInt(String8(AUDIO_PARAMETER_DEVICE_CONNECT), device);
             mpClientInterface->setParameters(AUDIO_IO_HANDLE_NONE, param.toString());
 
-#endif /* QCOM_HARDWARE */
         } break;
 
         // handle input device disconnection
@@ -616,11 +580,7 @@ status_t AudioPolicyManager::setDeviceConnectionStateInt(audio_devices_t device,
             ALOGV("setDeviceConnectionState() disconnecting input device %x", device);
 
             // Set Disconnect to HALs
-#ifndef QCOM_HARDWARE
-            AudioParameter param = AudioParameter(address);
-#else /* QCOM_HARDWARE */
             param = AudioParameter(address);
-#endif /* QCOM_HARDWARE */
             param.addInt(String8(AUDIO_PARAMETER_DEVICE_DISCONNECT), device);
             mpClientInterface->setParameters(AUDIO_IO_HANDLE_NONE, param.toString());
 
@@ -823,13 +783,9 @@ void AudioPolicyManager::updateCallRouting(audio_devices_t rxDevice, int delayMs
 
 void AudioPolicyManager::setPhoneState(audio_mode_t state)
 {
-#ifndef QCOM_HARDWARE
-    ALOGV("setPhoneState() state %d", state);
-#else /* QCOM_HARDWARE */
     ALOGD("setPhoneState() state %d", state);
     audio_devices_t newDevice = AUDIO_DEVICE_NONE;
 
-#endif /* QCOM_HARDWARE */
     if (state < 0 || state >= AUDIO_MODE_CNT) {
         ALOGW("setPhoneState() invalid state %d", state);
         return;
@@ -893,7 +849,6 @@ void AudioPolicyManager::setPhoneState(audio_mode_t state)
 
     sp<AudioOutputDescriptor> hwOutputDesc = mOutputs.valueFor(mPrimaryOutput);
 
-#ifdef QCOM_HARDWARE
 #ifdef VOICE_CONCURRENCY
     int voice_call_state = 0;
     char propValue[PROPERTY_VALUE_MAX];
@@ -1060,7 +1015,6 @@ void AudioPolicyManager::setPhoneState(audio_mode_t state)
 
     mPrevPhoneState = oldState;
 
-#endif /* QCOM_HARDWARE */
     int delayMs = 0;
     if (isStateInCall(state)) {
         nsecs_t sysTime = systemTime();
@@ -1111,7 +1065,6 @@ void AudioPolicyManager::setPhoneState(audio_mode_t state)
     } else {
         setOutputDevice(mPrimaryOutput, rxDevice, force, 0);
     }
-#ifdef QCOM_HARDWARE
     //update device for all non-primary outputs
     for (size_t i = 0; i < mOutputs.size(); i++) {
         audio_io_handle_t output = mOutputs.keyAt(i);
@@ -1126,7 +1079,6 @@ void AudioPolicyManager::setPhoneState(audio_mode_t state)
         }
     }
 
-#endif /* QCOM_HARDWARE */
     // if entering in call state, handle special case of active streams
     // pertaining to sonification strategy see handleIncallSonification()
     if (isStateInCall(state)) {
@@ -1166,11 +1118,9 @@ void AudioPolicyManager::setForceUse(audio_policy_force_use_t usage,
         break;
     case AUDIO_POLICY_FORCE_FOR_MEDIA:
         if (config != AUDIO_POLICY_FORCE_HEADPHONES && config != AUDIO_POLICY_FORCE_BT_A2DP &&
-#ifdef QCOM_HARDWARE
 #ifdef AUDIO_EXTN_FM_ENABLED
             config != AUDIO_POLICY_FORCE_SPEAKER &&
 #endif
-#endif /* QCOM_HARDWARE */
             config != AUDIO_POLICY_FORCE_WIRED_ACCESSORY &&
             config != AUDIO_POLICY_FORCE_ANALOG_DOCK &&
             config != AUDIO_POLICY_FORCE_DIGITAL_DOCK && config != AUDIO_POLICY_FORCE_NONE &&
@@ -1276,11 +1226,7 @@ sp<AudioPolicyManager::IOProfile> AudioPolicyManager::getProfileForDirectOutput(
             bool found = profile->isCompatibleProfile(device, String8(""), samplingRate,
                     NULL /*updatedSamplingRate*/, format, channelMask,
                     flags & AUDIO_OUTPUT_FLAG_COMPRESS_OFFLOAD ?
-#ifndef QCOM_HARDWARE
-                        AUDIO_OUTPUT_FLAG_COMPRESS_OFFLOAD : AUDIO_OUTPUT_FLAG_DIRECT);
-#else /* QCOM_HARDWARE */
                         flags : (audio_output_flags_t) (AUDIO_OUTPUT_FLAG_DIRECT | flags));
-#endif /* QCOM_HARDWARE */
             if (found && (mAvailableOutputDevices.types() & profile->mSupportedDevices.types())) {
                 return profile;
             }
@@ -1298,9 +1244,6 @@ audio_io_handle_t AudioPolicyManager::getOutput(audio_stream_type_t stream,
 {
     routing_strategy strategy = getStrategy(stream);
     audio_devices_t device = getDeviceForStrategy(strategy, false /*fromCache*/);
-#ifdef QCOM_HARDWARE
-
-#endif /* QCOM_HARDWARE */
     ALOGV("getOutput() device %d, stream %d, samplingRate %d, format %x, channelMask %x, flags %x",
           device, stream, samplingRate, format, channelMask, flags);
 
@@ -1491,7 +1434,6 @@ audio_io_handle_t AudioPolicyManager::getOutputForDevice(
         return 0;
     }
 
-#ifdef QCOM_HARDWARE
 #ifdef VOICE_CONCURRENCY
     char propValue[PROPERTY_VALUE_MAX];
     bool prop_play_enabled=false, prop_voip_enabled = false;
@@ -1622,7 +1564,6 @@ audio_io_handle_t AudioPolicyManager::getOutputForDevice(
            flags = AUDIO_OUTPUT_FLAG_FAST;
     }
 #endif
-#endif /* QCOM_HARDWARE */
     // open a direct output if required by specified parameters
     //force direct flag if offload flag is set: offloading implies a direct output stream
     // and all common behaviors are driven by checking only the direct flag
@@ -1638,13 +1579,11 @@ audio_io_handle_t AudioPolicyManager::getOutputForDevice(
         flags = (audio_output_flags_t)(flags &~AUDIO_OUTPUT_FLAG_DEEP_BUFFER);
     }
 
-#ifdef QCOM_HARDWARE
     if ((format == AUDIO_FORMAT_PCM_16_BIT) &&(popcount(channelMask) > 2)) {
         ALOGV("owerwrite flag(%x) for PCM16 multi-channel(CM:%x) playback", flags ,channelMask);
         flags = AUDIO_OUTPUT_FLAG_DIRECT;
     }
 
-#endif /* QCOM_HARDWARE */
     sp<IOProfile> profile;
 
     // skip direct output selection if the request can obviously be attached to a mixed output
@@ -1662,14 +1601,9 @@ audio_io_handle_t AudioPolicyManager::getOutputForDevice(
     // This may prevent offloading in rare situations where effects are left active by apps
     // in the background.
 
-#ifndef QCOM_HARDWARE
-    if (((flags & AUDIO_OUTPUT_FLAG_COMPRESS_OFFLOAD) == 0) ||
-            !isNonOffloadableEffectEnabled()) {
-#else /* QCOM_HARDWARE */
     if ((((flags & AUDIO_OUTPUT_FLAG_COMPRESS_OFFLOAD) == 0) ||
             !isNonOffloadableEffectEnabled()) &&
             flags & AUDIO_OUTPUT_FLAG_DIRECT) {
-#endif /* QCOM_HARDWARE */
         profile = getProfileForDirectOutput(device,
                                            samplingRate,
                                            format,
@@ -2018,11 +1952,7 @@ status_t AudioPolicyManager::stopOutput(audio_io_handle_t output,
     handleEventForBeacon(stream == AUDIO_STREAM_TTS ? STOPPING_BEACON : STOPPING_OUTPUT);
 
     // handle special case for sonification while in call
-#ifndef QCOM_HARDWARE
-    if (isInCall()) {
-#else /* QCOM_HARDWARE */
     if ((isInCall()) && (outputDesc->mRefCount[stream] == 1)) {
-#endif /* QCOM_HARDWARE */
         handleIncallSonification(stream, false, false);
     }
 
@@ -2229,10 +2159,8 @@ status_t AudioPolicyManager::getInputForAttr(const audio_attributes_t *attr,
                 return 0;
             }
         }
-#endif /* QCOM_HARDWARE */
     }
 
-#ifdef QCOM_HARDWARE
 #endif
 
     if (inputSource == AUDIO_SOURCE_DEFAULT) {
@@ -2419,7 +2347,6 @@ status_t AudioPolicyManager::startInput(audio_io_handle_t input,
         }
     }
 
-#ifdef QCOM_HARDWARE
 #ifdef RECORD_PLAY_CONCURRENCY
     mIsInputRequestOnProgress = true;
 
@@ -2464,7 +2391,6 @@ status_t AudioPolicyManager::startInput(audio_io_handle_t input,
     }
 #endif
 
-#endif /* QCOM_HARDWARE */
     if (inputDesc->mRefCount == 0) {
         if (activeInputsCount() == 0) {
             SoundTrigger::setCaptureState(true);
@@ -2492,11 +2418,9 @@ status_t AudioPolicyManager::startInput(audio_io_handle_t input,
     ALOGV("AudioPolicyManager::startInput() input source = %d", inputDesc->mInputSource);
 
     inputDesc->mRefCount++;
-#ifdef QCOM_HARDWARE
 #ifdef RECORD_PLAY_CONCURRENCY
     mIsInputRequestOnProgress = false;
 #endif
-#endif /* QCOM_HARDWARE */
     return NO_ERROR;
 }
 
@@ -2547,7 +2471,6 @@ status_t AudioPolicyManager::stopInput(audio_io_handle_t input,
             SoundTrigger::setCaptureState(false);
         }
     }
-#ifdef QCOM_HARDWARE
 
 #ifdef RECORD_PLAY_CONCURRENCY
     char propValue[PROPERTY_VALUE_MAX];
@@ -2576,7 +2499,6 @@ status_t AudioPolicyManager::stopInput(audio_io_handle_t input,
         }
     }
 #endif
-#endif /* QCOM_HARDWARE */
     return NO_ERROR;
 }
 
@@ -2697,18 +2619,15 @@ status_t AudioPolicyManager::setStreamVolumeIndex(audio_stream_type_t stream,
     for (size_t i = 0; i < mOutputs.size(); i++) {
         audio_devices_t curDevice =
                 getDeviceForVolume(mOutputs.valueAt(i)->device());
-#ifdef QCOM_HARDWARE
+
 #ifdef AUDIO_EXTN_FM_ENABLED
         audio_devices_t availableOutputDeviceTypes = mAvailableOutputDevices.types();
         if (((device == AUDIO_DEVICE_OUT_DEFAULT) &&
               ((availableOutputDeviceTypes & AUDIO_DEVICE_OUT_FM) != AUDIO_DEVICE_OUT_FM)) ||
               (device == curDevice)) {
 #else
-#endif /* QCOM_HARDWARE */
         if ((device == AUDIO_DEVICE_OUT_DEFAULT) || ((curDevice & strategyDevice) != 0)) {
-#ifdef QCOM_HARDWARE
 #endif
-#endif /* QCOM_HARDWARE */
             status_t volStatus = checkAndSetVolume(stream, index, mOutputs.keyAt(i), curDevice);
             if (volStatus != NO_ERROR) {
                 status = volStatus;
@@ -3212,15 +3131,14 @@ bool AudioPolicyManager::isOffloadSupported(const audio_offload_info_t& offloadI
      offloadInfo.stream_type, offloadInfo.bit_rate, offloadInfo.duration_us,
      offloadInfo.has_video);
 
-#ifndef QCOM_HARDWARE
     // Check if offload has been disabled
-    char propValue[PROPERTY_VALUE_MAX];
-    if (property_get("audio.offload.disable", propValue, "0")) {
-        if (atoi(propValue) != 0) {
-            ALOGV("offload disabled by audio.offload.disable=%s", propValue );
+    char offloadpropValue[PROPERTY_VALUE_MAX];
+    if (property_get("audio.offload.disable", offloadpropValue, "0")) {
+        if (atoi(offloadpropValue) != 0) {
+            ALOGV("offload disabled by audio.offload.disable=%s", offloadpropValue );
             return false;
         }
-#else /* QCOM_HARDWARE */
+    }
 #ifdef VOICE_CONCURRENCY
     char concpropValue[PROPERTY_VALUE_MAX];
     if (property_get("voice.playback.conc.disabled", concpropValue, NULL)) {
@@ -3240,35 +3158,21 @@ bool AudioPolicyManager::isOffloadSupported(const audio_offload_info_t& offloadI
 
     if (property_get("rec.playback.conc.disabled", recConcPropValue, NULL)) {
         prop_rec_play_enabled = atoi(recConcPropValue) || !strncmp("true", recConcPropValue, 4);
-#endif /* QCOM_HARDWARE */
     }
 
-#ifdef QCOM_HARDWARE
     if ((prop_rec_play_enabled) &&
          ((true == mIsInputRequestOnProgress) || (activeInputsCount() > 0))) {
         ALOGD("copl: blocking  compress offload for record concurrency");
         return false;
     }
 #endif
-#endif /* QCOM_HARDWARE */
     // Check if stream type is music, then only allow offload as of now.
     if (offloadInfo.stream_type != AUDIO_STREAM_MUSIC)
     {
-#ifndef QCOM_HARDWARE
-        ALOGV("isOffloadSupported: stream_type != MUSIC, returning false");
-#else /* QCOM_HARDWARE */
         ALOGD("isOffloadSupported: stream_type != MUSIC, returning false");
-#endif /* QCOM_HARDWARE */
         return false;
     }
 
-#ifndef QCOM_HARDWARE
-    //TODO: enable audio offloading with video when ready
-    if (offloadInfo.has_video)
-    {
-        ALOGV("isOffloadSupported: has_video == true, returning false");
-        return false;
-#else /* QCOM_HARDWARE */
     char propValue[PROPERTY_VALUE_MAX];
     bool pcmOffload = false;
     if (audio_is_offload_pcm(offloadInfo.format)) {
@@ -3342,7 +3246,6 @@ bool AudioPolicyManager::isOffloadSupported(const audio_offload_info_t& offloadI
             ALOGD("isOffloadSupported: has_video == true, property\
                     set to enable offload");
         }
-#endif /* QCOM_HARDWARE */
     }
 
     //If duration is less than minimum value defined in property, return false
@@ -3353,9 +3256,6 @@ bool AudioPolicyManager::isOffloadSupported(const audio_offload_info_t& offloadI
         }
     } else if (offloadInfo.duration_us < OFFLOAD_DEFAULT_MIN_DURATION_SECS * 1000000) {
         ALOGV("Offload denied by duration < default min(=%u)", OFFLOAD_DEFAULT_MIN_DURATION_SECS);
-#ifndef QCOM_HARDWARE
-        return false;
-#else /* QCOM_HARDWARE */
         //duration checks only valid for MP3/AAC formats,
         //do not check duration for other audio formats, e.g. dolby AAC/AC3 and amrwb+ formats
         if ((offloadInfo.format == AUDIO_FORMAT_MP3) ||
@@ -3363,7 +3263,6 @@ bool AudioPolicyManager::isOffloadSupported(const audio_offload_info_t& offloadI
             ((offloadInfo.format & AUDIO_FORMAT_MAIN_MASK) == AUDIO_FORMAT_FLAC) ||
             pcmOffload)
             return false;
-#endif /* QCOM_HARDWARE */
     }
 
     // Do not allow offloading if one non offloadable effect is enabled. This prevents from
@@ -3376,7 +3275,6 @@ bool AudioPolicyManager::isOffloadSupported(const audio_offload_info_t& offloadI
         return false;
     }
 
-#ifdef QCOM_HARDWARE
     // Check for soundcard status
     String8 valueStr = mpClientInterface->getParameters((audio_io_handle_t)0,
                                 String8("SND_CARD_STATUS"));
@@ -3388,7 +3286,6 @@ bool AudioPolicyManager::isOffloadSupported(const audio_offload_info_t& offloadI
         return false;
     }
 
-#endif /* QCOM_HARDWARE */
     // See if there is a profile to support this.
     // AUDIO_DEVICE_NONE
     sp<IOProfile> profile = getProfileForDirectOutput(AUDIO_DEVICE_NONE /*ignore device */,
@@ -4055,10 +3952,8 @@ AudioPolicyManager::AudioPolicyManager(AudioPolicyClientInterface *clientInterfa
     mTotalEffectsCpuLoad(0), mTotalEffectsMemory(0),
     mA2dpSuspended(false),
     mSpeakerDrcEnabled(false), mNextUniqueId(1),
-#ifdef QCOM_HARDWARE
     mHdmiAudioDisabled(false), mHdmiAudioEvent(false),
     mPrevPhoneState(0),
-#endif /* QCOM_HARDWARE */
     mPrimarySuspended (0), mFastSuspended(0),
     mMultiChannelSuspended(0),
     mAudioPortGeneration(1),
@@ -4265,13 +4160,11 @@ AudioPolicyManager::AudioPolicyManager(AudioPolicyClientInterface *clientInterfa
 
     updateDevicesAndOutputs();
 
-#ifdef QCOM_HARDWARE
     mvoice_call_state = 0;
 #ifdef RECORD_PLAY_CONCURRENCY
     mIsInputRequestOnProgress = false;
 #endif
 
-#endif /* QCOM_HARDWARE */
 #ifdef AUDIO_POLICY_TEST
     if (mPrimaryOutput != 0) {
         AudioParameter outputCmd = AudioParameter();
@@ -5125,11 +5018,7 @@ void AudioPolicyManager::checkOutputForStrategy(routing_strategy strategy)
 {
     audio_devices_t oldDevice = getDeviceForStrategy(strategy, true /*fromCache*/);
     audio_devices_t newDevice = getDeviceForStrategy(strategy, false /*fromCache*/);
-#ifndef QCOM_HARDWARE
-    SortedVector<audio_io_handle_t> srcOutputs = getOutputsForDevice(oldDevice, mPreviousOutputs);
-#else /* QCOM_HARDWARE */
     SortedVector<audio_io_handle_t> srcOutputs = getOutputsForDevice(oldDevice, mOutputs);
-#endif /* QCOM_HARDWARE */
     SortedVector<audio_io_handle_t> dstOutputs = getOutputsForDevice(newDevice, mOutputs);
 
     // also take into account external policy-related changes: add all outputs which are
@@ -5281,9 +5170,7 @@ audio_devices_t AudioPolicyManager::getNewOutputDevice(audio_io_handle_t output,
     audio_devices_t device = AUDIO_DEVICE_NONE;
 
     sp<AudioOutputDescriptor> outputDesc = mOutputs.valueFor(output);
-#ifdef QCOM_HARDWARE
     sp<AudioOutputDescriptor> primaryOutputDesc = mOutputs.valueFor(mPrimaryOutput);
-#endif /* QCOM_HARDWARE */
 
     ssize_t index = mAudioPatches.indexOfKey(outputDesc->mPatchHandle);
     if (index >= 0) {
@@ -5322,20 +5209,12 @@ audio_devices_t AudioPolicyManager::getNewOutputDevice(audio_io_handle_t output,
         device = getDeviceForStrategy(STRATEGY_PHONE, fromCache);
     } else if (outputDesc->isStrategyActive(STRATEGY_ENFORCED_AUDIBLE)) {
         device = getDeviceForStrategy(STRATEGY_ENFORCED_AUDIBLE, fromCache);
-#ifndef QCOM_HARDWARE
-    } else if (outputDesc->isStrategyActive(STRATEGY_SONIFICATION)) {
-#else /* QCOM_HARDWARE */
     } else if (outputDesc->isStrategyActive(STRATEGY_SONIFICATION) ||
                 (primaryOutputDesc->isStrategyActive(STRATEGY_SONIFICATION)
                 && (!primaryOutputDesc->isStrategyActive(STRATEGY_MEDIA)))) {
-#endif /* QCOM_HARDWARE */
         device = getDeviceForStrategy(STRATEGY_SONIFICATION, fromCache);
-#ifndef QCOM_HARDWARE
-    } else if (outputDesc->isStrategyActive(STRATEGY_SONIFICATION_RESPECTFUL)) {
-#else /* QCOM_HARDWARE */
     } else if (outputDesc->isStrategyActive(STRATEGY_SONIFICATION_RESPECTFUL) ||
                primaryOutputDesc->isStrategyActive(STRATEGY_SONIFICATION_RESPECTFUL)) {
-#endif /* QCOM_HARDWARE */
         device = getDeviceForStrategy(STRATEGY_SONIFICATION_RESPECTFUL, fromCache);
     } else if (outputDesc->isStrategyActive(STRATEGY_ACCESSIBILITY)) {
         device = getDeviceForStrategy(STRATEGY_ACCESSIBILITY, fromCache);
@@ -5429,11 +5308,9 @@ AudioPolicyManager::routing_strategy AudioPolicyManager::getStrategy(
         // NOTE: SYSTEM stream uses MEDIA strategy because muting music and switching outputs
         // while key clicks are played produces a poor result
     case AUDIO_STREAM_MUSIC:
-#ifdef QCOM_HARDWARE
 #ifdef AUDIO_EXTN_INCALL_MUSIC_ENABLED
     case AUDIO_STREAM_INCALL_MUSIC:
 #endif
-#endif /* QCOM_HARDWARE */
         return STRATEGY_MEDIA;
     case AUDIO_STREAM_ENFORCED_AUDIBLE:
         return STRATEGY_ENFORCED_AUDIBLE;
@@ -5687,18 +5564,12 @@ audio_devices_t AudioPolicyManager::getDeviceForStrategy(routing_strategy strate
                 if (device) break;
                 device = availableOutputDeviceTypes & AUDIO_DEVICE_OUT_AUX_DIGITAL;
                 if (device) break;
-#ifndef QCOM_HARDWARE
-                device = availableOutputDeviceTypes & AUDIO_DEVICE_OUT_ANLG_DOCK_HEADSET;
-                if (device) break;
-#endif /* ! QCOM_HARDWARE */
             }
-#ifdef QCOM_HARDWARE
 
             // Allow voice call on USB ANLG DOCK headset
             device = availableOutputDeviceTypes & AUDIO_DEVICE_OUT_ANLG_DOCK_HEADSET;
             if (device) break;
 
-#endif /* QCOM_HARDWARE */
             device = availableOutputDeviceTypes & AUDIO_DEVICE_OUT_EARPIECE;
             if (device) break;
             device = mDefaultOutputDevice->mDeviceType;
@@ -5859,12 +5730,8 @@ audio_devices_t AudioPolicyManager::getDeviceForStrategy(routing_strategy strate
         if (device2 == AUDIO_DEVICE_NONE) {
             device2 = availableOutputDeviceTypes & AUDIO_DEVICE_OUT_DGTL_DOCK_HEADSET;
         }
-#ifndef QCOM_HARDWARE
-        if ((device2 == AUDIO_DEVICE_NONE) && (strategy != STRATEGY_SONIFICATION)
-#else /* QCOM_HARDWARE */
         if ((strategy != STRATEGY_SONIFICATION) && (device == AUDIO_DEVICE_NONE)
              && (device2 == AUDIO_DEVICE_NONE)
-#endif /* QCOM_HARDWARE */
 #ifdef HDMI_PASSTHROUGH_ENABLED
              && (strategy != STRATEGY_ENFORCED_AUDIBLE)
 #endif
@@ -5873,12 +5740,8 @@ audio_devices_t AudioPolicyManager::getDeviceForStrategy(routing_strategy strate
             device2 = availableOutputDeviceTypes & AUDIO_DEVICE_OUT_AUX_DIGITAL;
         }
         if ((device2 == AUDIO_DEVICE_NONE) &&
-#ifndef QCOM_HARDWARE
-                (mForceUse[AUDIO_POLICY_FORCE_FOR_DOCK] == AUDIO_POLICY_FORCE_ANALOG_DOCK)) {
-#else /* QCOM_HARDWARE */
                 (mForceUse[AUDIO_POLICY_FORCE_FOR_DOCK] == AUDIO_POLICY_FORCE_ANALOG_DOCK)
                 && (strategy != STRATEGY_SONIFICATION)) {
-#endif /* QCOM_HARDWARE */
             device2 = availableOutputDeviceTypes & AUDIO_DEVICE_OUT_ANLG_DOCK_HEADSET;
         }
 #ifdef QCOM_HARDWARE
@@ -6496,11 +6359,7 @@ uint32_t AudioPolicyManager::activeInputsCount() const
     for (size_t i = 0; i < mInputs.size(); i++) {
         const sp<AudioInputDescriptor>  desc = mInputs.valueAt(i);
         if (desc->mRefCount > 0) {
-#ifndef QCOM_HARDWARE
-            return count++;
-#else /* QCOM_HARDWARE */
             count++;
-#endif /* QCOM_HARDWARE */
         }
     }
     return count;
@@ -6992,12 +6851,8 @@ status_t AudioPolicyManager::checkAndSetVolume(audio_stream_type_t stream,
             voiceVolume = 1.0;
         }
 
-#ifndef QCOM_HARDWARE
-        if (voiceVolume != mLastVoiceVolume && output == mPrimaryOutput) {
-#else /* QCOM_HARDWARE */
         if (voiceVolume != mLastVoiceVolume && ((output == mPrimaryOutput) ||
             isDirectOutput(output) || device & AUDIO_DEVICE_OUT_ALL_USB)) {
-#endif /* QCOM_HARDWARE */
             mpClientInterface->setVoiceVolume(voiceVolume, delayMs);
             mLastVoiceVolume = voiceVolume;
         }
@@ -7134,13 +6989,8 @@ bool AudioPolicyManager::isInCall()
 }
 
 bool AudioPolicyManager::isStateInCall(int state) {
-#ifndef QCOM_HARDWARE
-    return ((state == AUDIO_MODE_IN_CALL) ||
-            (state == AUDIO_MODE_IN_COMMUNICATION));
-#else /* QCOM_HARDWARE */
     return ((state == AUDIO_MODE_IN_CALL) || (state == AUDIO_MODE_IN_COMMUNICATION) ||
        ((state == AUDIO_MODE_RINGTONE) && (mPrevPhoneState == AUDIO_MODE_IN_CALL)));
-#endif /* QCOM_HARDWARE */
 }
 
 uint32_t AudioPolicyManager::getMaxEffectsCpuLoad()

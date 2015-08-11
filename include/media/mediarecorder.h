@@ -1,7 +1,5 @@
 /*
-#ifdef QCOM_HARDWARE
  **
-#endif /* QCOM_HARDWARE */
  ** Copyright (C) 2008 The Android Open Source Project
  **
  ** Licensed under the Apache License, Version 2.0 (the "License");
@@ -73,18 +71,12 @@ enum output_format {
     /* H.264/AAC data encapsulated in MPEG2/TS */
     OUTPUT_FORMAT_MPEG2TS = 8,
 
-#ifndef QCOM_HARDWARE
-    /* VP8/VORBIS data in a WEBM container */
-#else /* QCOM_HARDWARE */
    /* VP8/VORBIS data in a WEBM container */
-#endif /* QCOM_HARDWARE */
     OUTPUT_FORMAT_WEBM = 9,
 
-#ifdef QCOM_HARDWARE
     OUTPUT_FORMAT_QCP = 20, // QCP file format
     OUTPUT_FORMAT_WAVE = 21, //WAVE file format
 
-#endif /* QCOM_HARDWARE */
     OUTPUT_FORMAT_LIST_END // must be last - used to validate format type
 };
 
@@ -97,12 +89,10 @@ enum audio_encoder {
     AUDIO_ENCODER_AAC_ELD = 5,
     AUDIO_ENCODER_VORBIS = 6,
 
-#ifdef QCOM_HARDWARE
     AUDIO_ENCODER_EVRC = 10,
     AUDIO_ENCODER_QCELP = 11,
     AUDIO_ENCODER_LPCM = 12,
 
-#endif /* QCOM_HARDWARE */
     AUDIO_ENCODER_LIST_END // must be the last - used to validate the audio encoder type
 };
 
@@ -112,11 +102,7 @@ enum video_encoder {
     VIDEO_ENCODER_H264 = 2,
     VIDEO_ENCODER_MPEG_4_SP = 3,
     VIDEO_ENCODER_VP8 = 4,
-#ifndef QCOM_HARDWARE
-
-#else /* QCOM_HARDWARE */
     VIDEO_ENCODER_H265 = 5,
-#endif /* QCOM_HARDWARE */
     VIDEO_ENCODER_LIST_END // must be the last - used to validate the video encoder type
 };
 
@@ -141,11 +127,9 @@ enum media_recorder_states {
 
     // Recording is in progress.
     MEDIA_RECORDER_RECORDING             = 1 << 4,
-#ifdef QCOM_HARDWARE
 
     // Recording is paused.
     MEDIA_RECORDER_PAUSED                = 1 << 5,
-#endif /* QCOM_HARDWARE */
 };
 
 // The "msg" code passed to the listener in notify.
@@ -259,9 +243,7 @@ public:
     status_t    getMaxAmplitude(int* max);
     status_t    start();
     status_t    stop();
-#ifdef QCOM_HARDWARE
     status_t    pause();
-#endif /* QCOM_HARDWARE */
     status_t    reset();
     status_t    init();
     status_t    close();

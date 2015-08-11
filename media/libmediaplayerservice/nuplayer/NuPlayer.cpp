@@ -1059,7 +1059,6 @@ void NuPlayer::onMessageReceived(const sp<AMessage> &msg) {
             } else {
                 ALOGW("resume called when renderer is gone or not set");
             }
->>>>>>> b12256-1
             break;
         }
 
